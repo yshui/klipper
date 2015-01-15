@@ -7,7 +7,15 @@ set_package_properties(PAM PROPERTIES DESCRIPTION "PAM Libraries"
                       )
 include(CheckTypeSize)
 include(FindPkgConfig)
-
+MACRO(MACRO_BOOL_TO_01 FOUND_VAR )
+   FOREACH (_current_VAR ${ARGN})
+      IF(${FOUND_VAR})
+         SET(${_current_VAR} 1)
+      ELSE(${FOUND_VAR})
+         SET(${_current_VAR} 0)
+      ENDIF(${FOUND_VAR})
+   ENDFOREACH(_current_VAR)
+ENDMACRO(MACRO_BOOL_TO_01)
 # find_package(XKB) # kxkb, kdm
 
 if (PAM_FOUND)
