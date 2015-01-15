@@ -13,10 +13,6 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS KDELibs4Support)
 
-#find_package(KF5TextEditor)
-#find_package(KWinDBusInterface CONFIG REQUIRED)
-find_package(KF5WebKit)
-
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings)
@@ -27,25 +23,10 @@ include(WriteBasicConfigVersionFile)
 include(CheckIncludeFiles)
 include(FeatureSummary)
 
-find_package(Qt5WebKitWidgets ${QT_MIN_VERSION} CONFIG)
-
-set_package_properties(Qt5WebKitWidgets PROPERTIES
-                       URL "git://gitorious.org/qt/qtwebkit.git"
-                       DESCRIPTION "Qt Webkit module (web browsing engine)"
-                       TYPE OPTIONAL
-                       PURPOSE "Used by the HTML-based GUI ksysguard library, therefore required for systemmonitor"
-                      )
-
 find_package(ZLIB)
 set_package_properties(ZLIB PROPERTIES DESCRIPTION "Support for gzip compressed files and data streams"
                        URL "http://www.zlib.net"
                        TYPE REQUIRED
-                      )
-
-find_package(dbusmenu-qt5 CONFIG)
-set_package_properties(dbusmenu-qt5 PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
-                       URL "https://launchpad.net/libdbusmenu-qt"
-                       TYPE OPTIONAL
                       )
 
 find_package(X11)
@@ -72,11 +53,7 @@ include(ConfigureChecks.cmake)
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
-#configure_file(config-workspace.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-workspace.h)
-#configure_file(config-unix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-unix.h )
 configure_file(config-X11.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-X11.h)
-
-#configure_file(plasma.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/plasma.desktop)
 
 set(KLIPPER_VERSION_STRING ${PROJECT_VERSION})
 add_definitions(-DTRANSLATION_DOMAIN=\"klipper\")
