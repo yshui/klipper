@@ -44,7 +44,9 @@ extern "C" int Q_DECL_EXPORT kdemain(int argc, char *argv[])
                        KAboutLicense::GPL,
                        i18n("(c) 1998, Andrew Stanley-Jones\n"
                             "1998-2002, Carsten Pfeiffer\n"
-                            "2001, Patrick Dubroy"));
+                            "2001, Patrick Dubroy"),
+                       QString(),
+                       "http://klipper.klipper.kde.org");
   aboutData.addAuthor(i18n("Carsten Pfeiffer"),
                       i18n("Author"),
                       "pfeiffer@kde.org");

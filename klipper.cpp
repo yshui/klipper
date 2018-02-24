@@ -48,9 +48,8 @@
 #include "klipperpopup.h"
 
 #ifdef HAVE_PRISON
-#include <prison/BarcodeWidget>
-#include <prison/DataMatrixBarcode>
-#include <prison/QRCodeBarcode>
+#include <prison/Prison>
+#include "prison/barcodeexamplewidget.h"
 #endif
 
 #include <config-X11.h>
@@ -898,7 +897,7 @@ void Klipper::editData(const QSharedPointer< const HistoryItem > &item)
 #ifdef HAVE_PRISON
 void Klipper::showBarcode(const QSharedPointer< const HistoryItem > &item)
 {
-    using namespace prison;
+    using namespace Prison;
     QPointer<QDialog> dlg(new QDialog());
     dlg->setWindowTitle( i18n("Mobile Barcode") );
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok, dlg);
@@ -909,8 +908,10 @@ void Klipper::showBarcode(const QSharedPointer< const HistoryItem > &item)
     QWidget* mw = new QWidget(dlg);
     QHBoxLayout* layout = new QHBoxLayout(mw);
 
-    BarcodeWidget* qrcode = new BarcodeWidget(new QRCodeBarcode());
-    BarcodeWidget* datamatrix = new BarcodeWidget(new DataMatrixBarcode());
+    BarcodeExampleWidget* qrcode = new BarcodeExampleWidget(createBarcode(QRCode), dlg.data());
+    BarcodeExampleWidget* datamatrix = new BarcodeExampleWidget(createBarcode(DataMatrix), dlg.data());
+    qrcode->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    datamatrix->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     if (item) {
         qrcode->setData( item->text() );
@@ -925,6 +926,9 @@ void Klipper::showBarcode(const QSharedPointer< const HistoryItem > &item)
     vBox->addWidget(mw);
     vBox->addWidget(buttons);
     dlg->adjustSize();
+    //minimalSize() doesn't work as expected until barcode is painted - force painting
+    qrcode->barcode()->toImage(qrcode->size());
+    datamatrix->barcode()->toImage(datamatrix->size());
 
     if (m_mode == KlipperMode::Standalone) {
         dlg->setModal(true);
