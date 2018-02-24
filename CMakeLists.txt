@@ -8,16 +8,17 @@ set(QT_MIN_VERSION "5.3.0")
 set(KF5_MIN_VERSION "5.4.0")
 set(INSTALL_SDDM_THEME TRUE)
 find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Widgets Quick QuickWidgets Concurrent Test Script Network)
-find_package(ECM 0.0.11 REQUIRED NO_MODULE)
+find_package(ECM 1.7 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
-find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS KDELibs4Support)
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS KDELibs4Support GlobalAccel)
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings)
 include(ECMPackageConfigHelpers)
 include(ECMMarkNonGuiExecutable)
+include(ECMAddAppIcon)
 include(CMakePackageConfigHelpers)
 include(WriteBasicConfigVersionFile)
 include(CheckIncludeFiles)
@@ -73,22 +74,24 @@ set(libklipper_common_SRCS
     actionstreewidget.cpp
     editactiondialog.cpp
     clipcommandprocess.cpp
+    prison/barcodeexamplewidget.cpp
 )
 
-find_package(Prison "1.2.0" CONFIG)
-set_package_properties(Prison PROPERTIES DESCRIPTION "Prison library"
+find_package(KF5 ${KF5_MIN_VERSION} COMPONENTS Prison)
+set_package_properties(KF5Prison PROPERTIES DESCRIPTION "Prison library"
                        URL "http://projects.kde.org/prison"
                        TYPE OPTIONAL
                        PURPOSE "Needed to create mobile barcodes from clipboard data (no stable release currently)"
                       )
-if (PRISON_FOUND)
-    include_directories(${PRISON_INCLUDE_DIR})
+if (KF5PRISON_FOUND)
+    include_directories(${KF5PRISON_INCLUDE_DIR})
 endif ()
 
-set(HAVE_PRISON ${PRISON_FOUND})
+set(HAVE_PRISON ${KF5PRISON_FOUND})
 configure_file(config-klipper.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-klipper.h )
 
-kde4_add_app_icon(libklipper_common_SRCS "${KDE4_ICON_INSTALL_DIR}/oxygen/*/apps/klipper.png")
+file(GLOB ICONS_SRCS "${CMAKE_INSTALL_PREFIX}/${ICON_INSTALL_DIR}/oxygen/base/*/apps/klipper.png")
+ecm_add_app_icon(libklipper_common_SRCS ICONS ${ICONS_SRCS})
 ki18n_wrap_ui(libklipper_common_SRCS generalconfig.ui actionsconfig.ui editactiondialog.ui)
 kconfig_add_kcfg_files(libklipper_common_SRCS klippersettings.kcfgc)
 
@@ -115,8 +118,8 @@ target_link_libraries(kdeinit_klipper
 if (X11_FOUND)
   target_link_libraries(kdeinit_klipper XCB::XCB Qt5::X11Extras)
 endif()
-if (PRISON_FOUND)
-  target_link_libraries(kdeinit_klipper ${PRISON_LIBRARIES})
+if (KF5PRISON_FOUND)
+  target_link_libraries(kdeinit_klipper KF5::Prison)
 endif ()
 
 install(TARGETS kdeinit_klipper ${INSTALL_TARGETS_DEFAULT_ARGS})
